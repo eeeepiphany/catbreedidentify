@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>猫种识别系统</title>
+		<script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+		<!-- <script src="axios.min.js"></script> -->
+		<link rel="stylesheet" href="https://unpkg.com/element-ui@2.15.12/lib/theme-chalk/index.css">
+		<script src="https://unpkg.com/element-ui@2.15.12/lib/index.js"></script>
+		<style type="text/css">
+			.el-table {
+				border: 1px solid #e8e8e8;
+				/* 表格边框 */
+				border-radius: 4px;
+				/* 表格圆角 */
+				background-color: #fff;
+				/* 表格背景色 */
+				color: #333;
+				/* 字体颜色 */
+				font-size: 14px;
+				/* 字体大小 */
+			}
+
+			.el-table th {
+				background-color: #f5f5f5;
+				/* 表头背景色 */
+				color: #666;
+				/* 表头字体颜色 */
+				height: 40px;
+				/* 表头高度 */
+				font-weight: 500;
+				/* 字体加粗 */
+				text-align: left;
+				/* 文本对齐 */
+			}
+
+			.el-table td {
+				border-bottom: 1px solid #e8e8e8;
+				/* 单元格底部边框 */
+				padding: 8px 0;
+				/* 单元格内边距 */
+				text-align: left;
+				/* 文本对齐 */
+			}
+
+			.el-table tr:hover {
+				background-color: #e6f7ff;
+				/* 鼠标悬浮行的背景色 */
+			}
+
+			.custom-dialog .el-dialog {
+				width: 500px;
+				/* 对话框宽度 */
+				border-radius: 8px;
+				/* 对话框圆角 */
+				overflow: hidden;
+				/* 隐藏溢出内容 */
+				box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+				/* 阴影效果 */
+			}
+
+			.custom-dialog .el-dialog__title {
+				font-size: 18px;
+				/* 标题字体大小 */
+				color: #333;
+				/* 标题字体颜色 */
+				padding: 16px;
+				/* 标题内边距 */
+				border-bottom: 1px solid #e8e8e8;
+				/* 标题下方的边框 */
+			}
+
+			.custom-dialog .el-dialog__body {
+				padding: 20px;
+				/* 对话框内容区域的内边距 */
+			}
+
+			.custom-dialog .dialog-footer {
+				text-align: right;
+				/* 底部按钮对齐到右侧 */
+				padding: 10px 20px 20px;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app">
+			<el-table :data="records">
+				<el-table-column prop="publisherName" label="发布人"></el-table-column>
+				<el-table-column prop="aiBreed" label="ai 判断品种名"></el-table-column>
+				<el-table-column prop="artiBreed" label="人工判断品种名"></el-table-column>
+				<el-table-column fixed="right" label="操作">
+					<template slot-scope="scope">
+						<el-button type="text" size="small" @click="artifact(scope.row.recordId)">人工辅助分类</el-button>
+					</template>
+				</el-table-column>
+			</el-table>
+
+
+			<!--  分页组件 -->
+			<el-pagination layout="prev, pager, next" :total="total" :page-size="5" :current-page.sync="page"
+				@current-change="load">
+			</el-pagination>
+
+
+
+			<el-row>
+				<el-col :span="24">
+					<el-button @click="goToImageUpload()">新增查询</el-button>
+					<el-button type="danger" @click="quit">退出</el-button>
+					<el-button @click="goToCatDisplay">查看所有猫种信息</el-button>
+				</el-col>
+			</el-row>
+
+
+
+			<el-dialog :title="dialogTitle" :visible.sync="detailVisible">
+				<el-form :model="record" label-position="left" label-width="100px" status-icon ref="form">
+					<el-form-item label="图片展示">
+						<img :src="'http://localhost:8090/showImage?path=' + record.filePath" alt="图片路径无效">
+					</el-form-item>
+					<el-form-item label="发布人">
+						<el-input v-model="record.publisher" disabled></el-input>
+					</el-form-item>
+					<el-form-item label="ai 判断类型">
+						<el-input v-model="record.aiBreed" disabled></el-input>
+					</el-form-item>
+					<el-form-item label="人工判断类型">
+						<el-select v-model="record.artiBreed" placeholder="请选择">
+							<el-option v-for="type in types" :key="type" :label="type" :value="type">
+							</el-option>
+						</el-select>
+					</el-form-item>
+				</el-form>
+				<div slot="footer" class="dialog-footer">
+					<el-button type="primary" @click="submit">确定</el-button>
+					<el-button @click="detailVisible = false">取消</el-button>
+				</div>
+
+			</el-dialog>
+
+		</div>
+
+		<script>
+			if (!sessionStorage.getItem('user')) {
+				location.href = 'index.html';
+			}
+			let vm = new Vue({
+				el: '#app',
+				data: {
+					dialogTitle: "人工辅助判断",
+					records: [],
+					page: 1,
+					total: 0,
+					record: {
+						recordId:'',
+						publisher: '',
+						aiBreed: '',
+						artiBreed: '',
+						filePath: ''
+					},
+					rules: {},
+					detailVisible: false,
+					types: [
+						"Abyssinian",
+						"American Bobtail",
+						"American Curl",
+						"American Shorthair",
+						"American Wirehair",
+						"Applehead Siamese",
+						"Balinese",
+						"Bengal",
+						"Birman",
+						"Bombay",
+						"British Shorthair",
+						"Burmese",
+						"Burmilla",
+						"Calico",
+						"Canadian Hairless",
+						"Chartreux",
+						"Chausie",
+						"Chinchilla",
+						"Cornish Rex",
+						"Cymric",
+						"Devon Rex",
+						"Dilute Calico",
+						"Dilute Tortoiseshell",
+						"Domestic Long Hair",
+						"Domestic Medium Hair",
+						"Domestic Short Hair",
+						"Egyptian Mau",
+						"Exotic Shorthair",
+						"Extra-Toes Cat - Hemingway Polydactyl",
+						"Havana",
+						"Himalayan",
+						"Japanese Bobtail",
+						"Javanese",
+						"Korat",
+						"LaPerm",
+						"Maine Coon",
+						"Manx",
+						"Munchkin",
+						"Nebelung",
+						"Norwegian Forest Cat",
+						"Ocicat",
+						"Oriental Long Hair",
+						"Oriental Short Hair",
+						"Oriental Tabby",
+						"Persian",
+						"Pixiebob",
+						"Ragamuffin",
+						"Ragdoll",
+						"Russian Blue",
+						"Scottish Fold",
+						"Selkirk Rex",
+						"Siamese",
+						"Siberian",
+						"Silver",
+						"Singapura",
+						"Snowshoe",
+						"Somali",
+						"Sphynx - Hairless Cat",
+						"Tabby",
+						"Tiger",
+						"Tonkinese",
+						"Torbie",
+						"Tortoiseshell",
+						"Turkish Angora",
+						"Turkish Van",
+						"Tuxedo",
+						"York Chocolate"
+					]
+				},
+				methods: {
+					quit() {
+						ELEMENT.MessageBox.confirm('真的要退出吗？', '确认退出？', {
+							showClose: false,
+							type: 'warning'
+						}).then(() => {
+							sessionStorage.clear();
+							location.href = 'index.html';
+						}).catch(() => {
+
+						});
+					},
+
+					load() {
+						axios.get('http://localhost:8080/catbreed/record/page/' + this.page).then(res => {
+							this.records = res.data.data.list;
+						})
+					},
+
+					init() {
+						this.getRecord(this.page); // 加载第一页数据
+					},
+					getRecord(page) {
+						axios.get('http://localhost:8080/catbreed/record/page/' + this.page)
+							.then(response => {
+								if (response.data.code === 200) {
+									const pageInfo = response.data.data;
+									this.records = pageInfo.list; // 假设返回的数据中记录列表在list字段
+									this.total = pageInfo.total; // 假设返回的数据中总记录数在total字段
+								} else {
+									// 处理错误情况
+									console.error('Failed to load records:', response.data);
+								}
+							})
+							.catch(error => {
+								// 处理网络请求错误
+								console.error('Error loading records:', error);
+							});
+					},
+					goToImageUpload() {
+						window.location.href = 'imageUpload.html';
+					},
+					goToCatDisplay() {
+						window.location.href = 'allBreedDisplay.html';
+					},
+					artifact(recordId) {
+						axios.get('http://localhost:8080/catbreed/record/find/' + recordId).then(res => {
+							this.record.recordId = res.data.data.recordId;
+							this.record.publisher = res.data.data.publisherName;
+							this.record.aiBreed = res.data.data.aiBreed;
+							this.record.artiBreed = res.data.data.artiBreed;
+							this.record.filePath = res.data.data.filePath; // 图片的存储路径
+						})
+
+						this.detailVisible = true;
+					},
+					submit() {
+						vm.$refs['form'].validate(valid => {
+							if (valid) {
+								axios.post('http://localhost:8080/catbreed/record/edit', {
+									recordId: this.record.recordId,
+									publisherName: JSON.parse(sessionStorage.getItem('user')).nickname,
+									aiBreed: this.record.aiBreed,
+									artiBreed: this.record.artiBreed,
+									filePath: this.record.filePath,
+								}).then(res => {
+									ELEMENT.Message('修改成功');
+									this.init();
+									this.detailVisible = false;
+								}).catch(err => {
+									ELEMENT.Message('添加失败');
+								});
+							} else {
+
+							}
+
+						});
+					}
+				},
+				// 声明周期钩子函数
+				mounted() {
+					this.init();
+				},
+
+			});
+		</script>
+	</body>
+</html>

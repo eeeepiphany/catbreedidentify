@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<!--    mybatis的配置文件-->
+
+<configuration>
+    <!-- 如果有配置属性，先放置 properties 标签 -->
+    <!-- <properties resource="your-properties-file.properties"/> -->
+
+    <!-- 接着放置其他配置，如 typeAliases -->
+    <typeAliases>
+        <!-- Your type alias configurations here -->
+    </typeAliases>
+
+    <!-- 其他配置继续... -->
+    <!-- <typeHandlers> -->
+    <!-- </typeHandlers> -->
+    <!-- ... -->
+</configuration>

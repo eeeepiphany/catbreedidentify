@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>猫种识别系统</title>
+		<script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+		<link rel="stylesheet" href="https://unpkg.com/element-ui@2.15.12/lib/theme-chalk/index.css">
+		<script src="https://unpkg.com/element-ui@2.15.12/lib/index.js"></script>
+		<link rel="stylesheet" href="common.css">
+	</head>
+	<style type="text/css">
+		body {
+			background-image: url('gaoda.jpg');
+			background-size: cover;
+			background-position: center;
+			background-attachment: fixed;
+			font-family: 'Arial', sans-serif;
+		}
+
+		#app {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			height: 100vh;
+		}
+
+		#form {
+			width: 300px;
+			padding: 20px;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+			border-radius: 8px;
+			background: #fff;
+			background-color: transparent;
+		}
+	</style>
+	<body>
+		<div id="app">
+
+			<el-row :gutter="20">
+				<el-col :span="16" :offset="4">
+					<div class="grid-content bg-purple" id="i">
+						<el-form :model="form" :rules="formRules" ref="login" status-icon label-position="left"
+							label-width="auto" id="form">
+							<el-form-item label="帐号" prop="loginId">
+								<el-input v-model="form.loginId" autocomplete="off"></el-input>
+							</el-form-item>
+							<el-form-item label="密码" prop="loginPwd">
+								<el-input type="password" v-model="form.loginPwd" autocomplete="off"></el-input>
+							</el-form-item>
+							<el-form-item>
+								<el-button @click="reg">注册</el-button>
+								<el-button @click="login">登录</el-button>
+								<el-button @click="reset">重置</el-button>
+							</el-form-item>
+						</el-form>
+					</div>
+				</el-col>
+			</el-row>
+			<el-dialog title="注册" :visible.sync="regVisible">
+				<el-form :model="register" label-position="left" label-width="100px" status-icon :rules="regRules"
+					ref="reg">
+					<el-form-item label="帐号" prop="loginId">
+						<el-input v-model="register.loginId" autocomplete="off"></el-input>
+					</el-form-item>
+					<el-form-item label="密码" prop="loginPwd">
+						<el-input type="password" v-model="register.loginPwd" autocomplete="off"></el-input>
+					</el-form-item>
+					<el-form-item label="重复密码" prop="rePwd">
+						<el-input type="password" v-model="register.rePwd" autocomplete="off"></el-input>
+					</el-form-item>
+					<el-form-item label="昵称" prop="nickname">
+						<el-input v-model="register.nickname" autocomplete="off"></el-input>
+					</el-form-item>
+					<el-form-item label="手机号码" prop="tel">
+						<el-input v-model="register.tel" autocomplete="off"></el-input>
+					</el-form-item>
+				</el-form>
+				<div slot="footer" class="dialog-footer">
+					<el-button type="primary" @click="submit">确定</el-button>
+					<el-button @click="cancel">取消</el-button>
+				</div>
+			</el-dialog>
+		</div>
+		<script>
+			let vm = new Vue({
+				el: '#app',
+				data: { //数据绑定
+					form: { //表单的数据
+						loginId: '',
+						loginPwd: ''
+					},
+					formRules: { //表单验证的规则
+						loginId: [ //json 数组对象
+							{
+								required: true,
+								message: '请输入帐号',
+								trigger: 'blur'
+							},
+						],
+						loginPwd: [{
+							required: true,
+							message: '请输入密码',
+							trigger: 'blur'
+						}]
+					},
+					regVisible: false,
+					register: {
+						loginId: '',
+						loginPwd: '',
+						rePwd: '',
+						nickname: '',
+						tel: ''
+					},
+					regRules: {
+						loginId: [{
+								required: true,
+								message: '帐号不能为空',
+								trigger: 'blur'
+							},
+							{
+								min: 4,
+								message: '不能少于4个字符',
+								trigger: 'blur'
+							}
+						],
+						loginPwd: [{
+								required: true,
+								message: '密码不能为空',
+								trigger: 'blur'
+							},
+							{
+								min: 6,
+								message: '不能少于6个字符',
+								trigger: 'blur'
+							}
+						],
+						rePwd: [{
+							required: true,
+							validator: (rule, value, callback) => {
+								if (value == '') {
+									callback(new Error('请再次输入密码'));
+								} else if (value != vm.$data.register.loginPwd) {
+									callback(new Error('两次输入密码不一致'));
+								} else {
+									callback();
+								}
+							},
+							trigger: 'blur'
+						}],
+						nickname: [{
+								required: true,
+								message: '昵称不能为空',
+								trigger: 'blur'
+							},
+							{
+								min: 2,
+								message: '不能少于2个字符',
+								trigger: 'blur'
+							}
+						],
+						tel: [{
+								required: true,
+								message: '手机号码不能为空',
+								trigger: 'blur'
+							},
+							{
+								pattern: /^1[3-9]\d{9}$/,
+								message: '手机号码格式错误',
+								trigger: 'blur'
+							}
+						]
+					}
+				},
+				methods: {
+					reset() {
+						this.form.loginId = '';
+						this.form.loginPwd = '';
+					},
+					reg() {
+						this.register.loginId = '';
+						this.register.loginPwd = '';
+						this.register.rePwd = '';
+						this.register.nickname = '';
+						this.register.tel = '';
+						this.regVisible = true;
+					},
+					login() {
+						vm.$refs['login'].validate(valid => {
+							if (valid) {
+								axios.post('http://localhost:8080/catbreed/user/login', {
+									loginId: this.form.loginId,
+									loginPwd: this.form.loginPwd
+								}).then(res => {
+									if (res.data.code == 200) {
+										sessionStorage.setItem('user', JSON.stringify(res.data.data));
+										
+										location.href = 'record_display.html';
+									} else {
+										ELEMENT.Message({
+											message: '帐号或密错误',
+											type: 'error'
+										});
+									}
+								});
+							} else {
+								return false;
+							}
+						});
+					},
+					cancel() {
+						this.regVisible = false;
+					},
+					submit() {
+						vm.$refs['reg'].validate(valid => {
+							if (valid) {
+								axios.post('http://localhost:8080/catbreed/user/reg', {
+									loginId: this.register.loginId,
+									loginPwd: this.register.loginPwd,
+									nickname: this.register.nickname,
+									tel: this.register.tel
+								}).then(res => {
+									if (res.data.code == 200) {
+										ELEMENT.Message('注册成功');
+										this.regVisible = false;
+									} else {
+										ELEMENT.Message('注册失败');
+									}
+								}).catch(() => {
+									ELEMENT.Message('注册失败');
+								});
+							} else {
+								return false;
+							}
+						});
+					}
+				}
+			});
+		</script>
+	</body>
+</html>

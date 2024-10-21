@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>猫种信息展示</title>
+		<style type="text/css">
+			/* styles.css */
+			body {
+				background-image: url('gaoda.jpg');
+				background-size: cover;
+				background-position: center;
+				background-attachment: fixed;
+				font-family: 'Arial', sans-serif;
+			}
+
+			body {
+				font-family: Arial, sans-serif;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				height: 100vh;
+				margin: 0;
+				background-color: #f5f5f5;
+			}
+
+			.container {
+				text-align: center;
+				background-color: #fff;
+				padding: 20px;
+				border-radius: 8px;
+				box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+			}
+
+			.dropdown-container {
+				margin: 20px 0;
+			}
+
+			.cat-info {
+				margin-top: 20px;
+				padding: 10px;
+				background-color: #e0e0e0;
+				border-radius: 8px;
+				display: none;
+				/* Initially hidden */
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<h1>猫种信息展示</h1>
+			<div class="dropdown-container">
+				<label for="cat-breeds">选择一个猫咪品种：</label>
+				<select id="cat-breeds" name="cat-breeds" onchange="showCatInfo()">
+					<option value="">请选择</option>
+					<option value="abyssinian">Abyssinian</option>
+					<option value="american-bobtail">American Bobtail</option>
+					<option value="american-curl">American Curl</option>
+					<option value="american-shorthair">American Shorthair</option>
+					<option value="american-wirehair">American Wirehair</option>
+					<option value="applehead-siamese">Applehead Siamese</option>
+					<option value="balinese">Balinese</option>
+					<option value="bengal">Bengal</option>
+					<option value="birman">Birman</option>
+					<option value="bombay">Bombay</option>
+					<option value="british-shorthair">British Shorthair</option>
+					<option value="burmese">Burmese</option>
+					<option value="burmilla">Burmilla</option>
+					<option value="calico">Calico</option>
+					<option value="canadian-hairless">Canadian Hairless</option>
+					<option value="chartreux">Chartreux</option>
+					<option value="chausie">Chausie</option>
+					<option value="chinchilla">Chinchilla</option>
+					<option value="cornish-rex">Cornish Rex</option>
+					<option value="cymric">Cymric</option>
+					<option value="devon-rex">Devon Rex</option>
+					<option value="dilute-calico">Dilute Calico</option>
+					<option value="dilute-tortoiseshell">Dilute Tortoiseshell</option>
+					<option value="domestic-long-hair">Domestic Long Hair</option>
+					<option value="domestic-medium-hair">Domestic Medium Hair</option>
+					<option value="domestic-short-hair">Domestic Short Hair</option>
+					<option value="egyptian-mau">Egyptian Mau</option>
+					<option value="exotic-shorthair">Exotic Shorthair</option>
+					<option value="extra-toes-cat">Extra-Toes Cat - Hemingway Polydactyl</option>
+					<option value="havana">Havana</option>
+					<option value="himalayan">Himalayan</option>
+					<option value="japanese-bobtail">Japanese Bobtail</option>
+					<option value="javanese">Javanese</option>
+					<option value="korat">Korat</option>
+					<option value="laperm">LaPerm</option>
+					<option value="maine-coon">Maine Coon</option>
+					<option value="manx">Manx</option>
+					<option value="munchkin">Munchkin</option>
+					<option value="nebelung">Nebelung</option>
+					<option value="norwegian-forest-cat">Norwegian Forest Cat</option>
+					<option value="ocicat">Ocicat</option>
+					<option value="oriental-long-hair">Oriental Long Hair</option>
+					<option value="oriental-short-hair">Oriental Short Hair</option>
+					<option value="oriental-tabby">Oriental Tabby</option>
+					<option value="persian">Persian</option>
+					<option value="pixiebob">Pixiebob</option>
+					<option value="ragamuffin">Ragamuffin</option>
+					<option value="ragdoll">Ragdoll</option>
+					<option value="russian-blue">Russian Blue</option>
+					<option value="scottish-fold">Scottish Fold</option>
+					<option value="selkirk-rex">Selkirk Rex</option>
+					<option value="siamese">Siamese</option>
+					<option value="siberian">Siberian</option>
+					<option value="silver">Silver</option>
+					<option value="singapura">Singapura</option>
+					<option value="snowshoe">Snowshoe</option>
+					<option value="somali">Somali</option>
+					<option value="sphynx-hairless-cat">Sphynx-Hairless Cat</option>
+					<option value="tabby">Tabby</option>
+					<option value="tiger">Tiger</option>
+					<option value="tonkinese">Tonkinese</option>
+					<option value="torbie">Torbie</option>
+					<option value="tortoiseshell">Tortoiseshell</option>
+					<option value="turkish-angora">Turkish Angora</option>
+					<option value="turkish-van">Turkish Van</option>
+					<option value="tuxedo">Tuxedo</option>
+					<option value="york-chocolate">York Chocolate</option>
+				</select>
+			</div>
+			<div id="cat-info" class="cat-info"></div>
+		</div>
+		<script type="text/javascript">
+			const catBreedsInfo = {
+				"abyssinian": {
+					name: "Abyssinian",
+					color: "红棕色、巧克力色、蓝色等",
+					personality: "好奇、活泼、爱社交",
+					characteristics: "短毛、优雅的体型"
+				},
+				"american-bobtail": {
+					name: "American Bobtail",
+					color: "各种颜色和图案",
+					personality: "友善、聪明、爱玩耍",
+					characteristics: "短尾、结实的体型"
+				},
+				"american-curl": {
+					name: "American Curl",
+					color: "各种颜色和图案",
+					personality: "友好、社交、好奇",
+					characteristics: "卷曲的耳朵、优雅的身材"
+				},
+				"american-shorthair": {
+					name: "American Shorthair",
+					color: "各种颜色和图案",
+					personality: "温和、友好、独立",
+					characteristics: "短毛、结实的体型、大而圆的眼睛"
+				},
+				"american-wirehair": {
+					name: "American Wirehair",
+					color: "各种颜色和图案",
+					personality: "活泼、友好、好奇",
+					characteristics: "卷曲的毛发、结实的体型、大耳朵"
+				},
+				"applehead-siamese": {
+					name: "Applehead Siamese",
+					color: "通常为暹罗猫典型的深色点状图案",
+					personality: "活泼、聪明、社交",
+					characteristics: "苹果形的头部、修长的身体、大耳朵"
+				},
+				"balinese": {
+					name: "Balinese",
+					color: "各种颜色，包括海豹色、蓝色、巧克力色等",
+					personality: "友好、活泼、聪明",
+					characteristics: "长毛、优雅、修长的身体"
+				},
+				"bengal": {
+					name: "Bengal",
+					color: "多种颜色，包括斑点、大理石纹或条纹图案",
+					personality: "活泼、好奇、社交",
+					characteristics: "豹纹外观、肌肉发达、敏捷"
+				},
+				"birman": {
+					name: "Birman",
+					color: "黑色，带有铜色眼睛",
+					personality: "友好、活泼、好奇心强",
+					characteristics: "短毛、圆脸、肌肉发达"
+				},
+				"bombay": {
+					name: "Bombay",
+					color: "黑色，带有铜色眼睛",
+					personality: "友好、活泼、好奇心强",
+					characteristics: "短毛、圆脸、肌肉发达"
+				},
+				"british-shorthair": {
+					name: "British Shorthair",
+					color: "多种颜色，包括蓝色、白色、黑色等",
+					personality: "温和、友好、耐心",
+					characteristics: "短毛、圆脸、结实的体型"
+				},
+				"burmese": {
+					name: "Burmese",
+					color: "金色至巧克力色，也有蓝色或浅紫色",
+					personality: "友好、活泼、深情",
+					characteristics: "短毛、圆脸、大而明亮的眼睛"
+				},
+				"burmilla": {
+					name: "Burmilla",
+					color: "多种颜色，包括巧克力色、蓝色、海豹色等",
+					personality: "友好、温顺、好奇",
+					characteristics: "长毛、圆脸、大而明亮的眼睛"
+				},
+				"calico": {
+					name: "Calico",
+					color: "白色、黑色和橙色的组合",
+					personality: "友好、社交、活泼",
+					characteristics: "三色毛发、通常为雌性"
+				},
+				"canadian-hairless": {
+					name: "Canadian Hairless",
+					color: "多种颜色和图案",
+					personality: "友好、聪明、好奇",
+					characteristics: "无毛、皮肤有褶皱、温顺"
+				},
+				"calico": {
+					name: "Calico",
+					color: "白色、黑色和橙色的组合",
+					personality: "友好、社交、活泼",
+					characteristics: "三色毛发、通常为雌性"
+				},
+				"canadian-hairless": {
+					name: "Canadian Hairless",
+					color: "多种颜色和图案",
+					personality: "友好、聪明、好奇",
+					characteristics: "无毛、皮肤有褶皱、温顺"
+				},
+
+				"chartreux": {
+					name: "Chartreu",
+					color: "通常为白色",
+					personality: "好奇心强",
+					characteristics: "短毛、长脸、肌肉发达"
+				},
+				"chartreux": {
+					name: "Chartreux",
+					color: "蓝色、奶油色、灰色等",
+					personality: "温和、友好、独立",
+					characteristics: "厚密的蓝色毛发、圆脸、大而圆的眼睛"
+				},
+				"chaussie": {
+					name: "Chausie",
+					color: "多种颜色和图案",
+					personality: "活泼、好奇、社交",
+					characteristics: "长腿、敏捷、混合品种特征"
+				},
+				"chinchilla": {
+					name: "Chinchilla",
+					color: "白色底毛上的黑色或蓝色毛发",
+					personality: "友好、温顺、安静",
+					characteristics: "长毛、柔软的毛发、圆脸"
+				},
+				"cornish-rex": {
+					name: "Cornish Rex",
+					color: "多种颜色和图案",
+					personality: "活泼、好奇、友好",
+					characteristics: "短而卷曲的毛发、大耳朵、修长的身体"
+				},
+				"cymric": {
+					name: "Cymric",
+					color: "多种颜色和图案",
+					personality: "温和、友好、忠诚",
+					characteristics: "长毛、结实的体型、大而圆的眼睛"
+				},
+				"devon-rex": {
+					name: "Devon Rex",
+					color: "多种颜色和图案",
+					personality: "活泼、友好、好奇",
+					characteristics: "卷曲的毛发、大耳朵、修长的身体"
+				},
+				"dilute-calico": {
+					name: "Dilute Calico",
+					color: "淡色白色、淡色黑色和橙色的组合",
+					personality: "友好、社交、活泼",
+					characteristics: "淡色三色毛发"
+				},
+				"dilute-tortoiseshell": {
+					name: "Dilute Tortoiseshell",
+					color: "淡色奶油色和淡色红色或蓝色",
+					personality: "独立、好奇、友好",
+					characteristics: "淡色混合毛发"
+				},
+				"domestic-long-hair": {
+					name: "Domestic Long Hair",
+					color: "多种颜色和图案",
+					personality: "温和、独立、适应性强",
+					characteristics: "长毛、多种体型"
+				},
+				"domestic-medium-hair": {
+					name: "Domestic Medium Hair",
+					color: "多种颜色和图案",
+					personality: "适应性强、友好、活泼",
+					characteristics: "中长毛、多种体型"
+				},
+				"domestic-short-hair": {
+					name: "Domestic Short Hair",
+					color: "多种颜色和图案",
+					personality: "活泼、友好、适应性强",
+					characteristics: "短毛、结实的体型"
+				},
+				"egyptian-mau": {
+					name: "Egyptian Mau",
+					color: "银色斑点、青铜色斑点",
+					personality: "友好、活泼、忠诚",
+					characteristics: "短毛、肌肉发达、豹形斑点"
+				},
+				"exotic-shorthair": {
+					name: "Exotic Shorthair",
+					color: "多种颜色和图案",
+					personality: "温和、友好、安静",
+					characteristics: "短毛、圆脸、大而圆的眼睛"
+				},
+				"extra-toes-cat": {
+					name: "Extra-Toes Cat - Hemingway Polydactyl",
+					color: "多种颜色和图案",
+					personality: "聪明、好奇、友好",
+					characteristics: "多趾、适应性强、多样的体型"
+				},
+				"havana": {
+					name: "Havana",
+					color: "巧克力色、蓝色或带有象牙色毛发",
+					personality: "活泼、好奇、社交",
+					characteristics: "短毛、圆脸、大而明亮的眼睛"
+				},
+				"himalayan": {
+					name: "Himalayan",
+					color: "白色、蓝色或带有象牙色毛发",
+					personality: "活泼、社交",
+					characteristics: "短毛、大而明亮的眼睛"
+				},
+				"japanese-bobtail": {
+					name: "Japanese Bobtail",
+					color: "多种颜色和图案",
+					personality: "友好、聪明、好奇",
+					characteristics: "短尾、优雅、多种体型"
+				},
+				"javanese": {
+					name: "Javanese",
+					color: "多种颜色，包括海豹色、蓝色、巧克力色等",
+					personality: "友好、活泼、社交",
+					characteristics: "长毛、优雅、修长的身体"
+				},
+				"korat": {
+					name: "Korat",
+					color: "蓝色或蓝灰色",
+					personality: "忠诚、活泼、聪明",
+					characteristics: "短毛、蓝眼睛、结实的体型"
+				},
+				"laperm": {
+					name: "LaPerm",
+					color: "多种颜色和图案",
+					personality: "友好、聪明、好奇",
+					characteristics: "卷曲毛发、大耳朵、活泼"
+				},
+				"maine-coon": {
+					name: "Maine Coon",
+					color: "多种颜色和图案",
+					personality: "温和、友好、社交",
+					characteristics: "长毛、大体型、友好的面孔"
+				},
+				"manx": {
+					name: "Manx",
+					color: "多种颜色和图案",
+					personality: "活泼、好奇、友好",
+					characteristics: "无尾或短尾、结实的体型"
+				},
+				"munchkin": {
+					name: "Munchkin",
+					color: "多种颜色和图案",
+					personality: "活泼、好奇、友好",
+					characteristics: "短腿、圆脸、长毛或短毛"
+				},
+				"nebelung": {
+					name: "Nebelung",
+					color: "蓝色或银蓝色",
+					personality: "温和、友好、安静",
+					characteristics: "长毛、优雅、蓝色眼睛"
+				},
+				"norwegian-forest-cat": {
+					name: "Norwegian Forest Cat",
+					color: "多种颜色和图案",
+					personality: "友好、活泼、独立",
+					characteristics: "长毛、大体型、强壮"
+				},
+				"ocicat": {
+					name: "Ocicat",
+					color: "多种颜色，包括巧克力色、蓝色、红色等",
+					personality: "活泼、好奇、社交",
+					characteristics: "斑点或大理石纹理、大耳朵"
+				},
+				"oriental-long-hair": {
+					name: "Oriental Long Hair",
+					color: "多种颜色和图案",
+					personality: "活泼、好奇、聪明",
+					characteristics: "长毛、修长的身体、大耳朵"
+				},
+				"oriental-short-hair": {
+					name: "Oriental Short Hair",
+					color: "多种颜色和图案",
+					personality: "活泼、好奇、聪明",
+					characteristics: "短毛、修长的身体、大耳朵"
+				},
+				"oriental-tabby": {
+					name: "Oriental Tabby",
+					color: "多种颜色，包括斑纹、斑点",
+					personality: "活泼、好奇、聪明",
+					characteristics: "斑纹毛发、修长的身体、大耳朵"
+				},
+				"persian": {
+					name: "Persian",
+					color: "多种颜色，包括白色、黑色、蓝色、奶油色等",
+					personality: "温和、友好、安静",
+					characteristics: "长毛、圆脸、大眼睛"
+				},
+				"pixiebob": {
+					name: "Pixiebob",
+					color: "多种颜色和图案",
+					personality: "活泼、好奇、忠诚",
+					characteristics: "短毛或长毛、结实的体型、大耳朵"
+				},
+				"ragamuffin": {
+					name: "Ragamuffin",
+					color: "多种颜色和图案",
+					personality: "友好、温顺、社交",
+					characteristics: "长毛、大体型、柔软的毛发"
+				},
+				"ragdoll": {
+					name: "Ragdoll",
+					color: "海豹色、蓝色、巧克力色、紫罗兰色等",
+					personality: "温顺、友好、安静",
+					characteristics: "长毛、大体型、蓝色眼睛"
+				},
+				"russian-blue": {
+					name: "Russian Blue",
+					color: "银蓝色或灰色",
+					personality: "独立、聪明、温顺",
+					characteristics: "短毛、优雅、绿眼睛"
+				},
+				"scottish-fold": {
+					name: "Scottish Fold",
+					color: "多种颜色和图案",
+					personality: "友好、温和、适应性强",
+					characteristics: "折耳、圆脸、大眼睛"
+				},
+				"selkirk-rex": {
+					name: "Selkirk Rex",
+					color: "多种颜色和图案",
+					personality: "友好、活泼、好奇",
+					characteristics: "长毛或短毛、卷曲毛发、圆脸"
+				},
+				"siamese": {
+					name: "Siamese",
+					color: "传统为海豹色，也有蓝色、巧克力色等",
+					personality: "活泼、聪明、社交",
+					characteristics: "短毛、尖耳、蓝眼睛"
+				},
+				"siberian": {
+					name: "Siberian",
+					color: "多种颜色和图案",
+					personality: "友好、活泼、聪明",
+					characteristics: "长毛、强壮的体型、大而圆的眼睛"
+				},
+				"silver": {
+					name: "Silver",
+					color: "银色毛发，可能带有斑点或条纹",
+					personality: "性格多样，取决于具体品种",
+					characteristics: "银色毛发、可能具有不同的身体特征"
+				},
+				"singapura": {
+					name: "Singapura",
+					color: "棕色虎斑、奶油色虎斑等",
+					personality: "友好、活泼、好奇",
+					characteristics: "短毛、小巧的体型、大而突出的眼睛"
+				},
+				"snowshoe": {
+					name: "Snowshoe",
+					color: "白色爪子和面具，身体有多种颜色",
+					personality: "友好、活泼、好奇",
+					characteristics: "短毛或长毛、白色爪子和面具"
+				},
+				"somali": {
+					name: "Somali",
+					color: "多种颜色，包括红色、蓝色、巧克力色等",
+					personality: "活泼、聪明、社交",
+					characteristics: "长毛、修长的身体、大耳朵"
+				},
+				"sphynx-hairless-cat": {
+					name: "Sphynx - Hairless Cat",
+					color: "多种颜色和图案",
+					personality: "活泼、友好、好奇",
+					characteristics: "无毛、皮肤有褶皱、大耳朵"
+				},
+				"tabby": {
+					name: "Tabby",
+					color: "多种颜色，包括斑纹、斑点",
+					personality: "性格多样，取决于具体品种",
+					characteristics: "斑纹或斑点毛发"
+				},
+				"tiger": {
+					name: "Tiger",
+					color: "橙色带黑色条纹",
+					personality: "性格多样，取决于具体品种",
+					characteristics: "类似老虎的条纹"
+				},
+				"tonkinese": {
+					name: "Tonkinese",
+					color: "多种颜色和图案",
+					personality: "活泼、友好、好奇",
+					characteristics: "短毛、大而明亮的眼睛"
+				},
+				"torbie": {
+					name: "Torbie",
+					color: "混合颜色，通常包括黑色、橙色和白色",
+					personality: "友好、活泼、社交",
+					characteristics: "三花毛发，可能带有虎斑"
+				},
+				"tortoiseshell": {
+					name: "Tortoiseshell",
+					color: "混合颜色，通常为黑色、橙色和奶油色",
+					personality: "独立、好奇、友好",
+					characteristics: "龟甲色毛发"
+				},
+				"turkish-angora": {
+					name: "Turkish Angora",
+					color: "多种颜色，包括白色、黑色、蓝色等",
+					personality: "活泼、友好、好奇",
+					characteristics: "长毛、优雅、大耳朵"
+				},
+				"turkish-van": {
+					name: "Turkish Van",
+					color: "白色身体，头部和尾部有色",
+					personality: "温和、忠诚、独立",
+					characteristics: "长毛、强壮的身体"
+				},
+				"tuxedo": {
+					name: "Tuxedo",
+					color: "黑色和白色，类似燕尾服",
+					personality: "友好、聪明、活泼",
+					characteristics: "短毛或长毛、黑白分明"
+				},
+				"york-chocolate": {
+					name: "York Chocolate",
+					color: "巧克力色",
+					personality: "性格多样，取决于具体品种",
+					characteristics: "巧克力色毛发"
+				}
+
+			};
+
+			function showCatInfo() {
+				const select = document.getElementById('cat-breeds');
+				const infoDiv = document.getElementById('cat-info');
+				const breed = select.value;
+
+				if (breed) {
+					const info = catBreedsInfo[breed];
+					infoDiv.innerHTML = `
+								            <h2>${info.name}</h2>
+								            <p><strong>颜色:</strong> ${info.color}</p>
+								            <p><strong>性格:</strong> ${info.personality}</p>
+								            <p><strong>特点:</strong> ${info.characteristics}</p>
+								        `;
+					infoDiv.style.display = 'block';
+				} else {
+					infoDiv.style.display = 'none';
+				}
+			};
+
+		</script>
+	</body>
+</html>

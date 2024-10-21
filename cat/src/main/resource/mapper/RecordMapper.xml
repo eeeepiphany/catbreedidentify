@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aida.cat.mapper.RecordMapper">
+
+<!--    mybatis的映射文件-->
+
+    <select id="findRecordById" resultMap="info">
+        select * from record where record_id = #{recordId}
+    </select>
+    <select id="findAllRecord" resultMap="info">
+        select * from record
+    </select>
+
+    <resultMap id="info" type="com.aida.cat.model.Record">
+        <id property="recordId" column="record_id" jdbcType="INTEGER"/>
+        <result property="publisherName" column="publisher" jdbcType="VARCHAR"/>
+        <result property="aiBreed" column="ai_breed" jdbcType="VARCHAR"/>
+        <result property="artiBreed" column="artifact_breed" jdbcType="VARCHAR"/>
+        <result property="filePath" column="file_path" jdbcType="VARCHAR"/>
+    </resultMap>
+
+</mapper>

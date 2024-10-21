@@ -1,0 +1,50 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /catbreed
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/catbreed?
+    username: root
+    password: root
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 10MB
+
+
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countSql
+
+logging:
+  level:
+    com:
+      atda:
+        cat:
+          mapper:
+            debug
+
+
+mybatis:
+  config-location: classpath:config/sqlMapConfig.xml
+  mapper-locations: classpath:mapper/*Mapper.xml
+
+
+
+
+# 指定上传文件的存储目录
+upload:
+  path: D:\Desktop\demo
+  # 可以添加其他与上传相关的配置，例如最大文件大小限制
+  max-file-size: 10MB
+  # 如果需要，还可以指定允许的文件类型
+  allowed-file-types:
+    - image/jpeg
+    - image/png
+    - image/gif
+
